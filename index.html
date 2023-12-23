@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Geschenk-Entschlüssler</title>
+    <title>Weihnachtsgeschenk-Verschlüsselung</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 200px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Geschenk-Entschlüssler</h1>
-    <input type="text" id="encryptionkey" placeholder="Schlüssel">
-    <input type="text" id="encryptedName" placeholder="Verschlüsselter Name">
-    <button onclick="decrypt()">Entschlüsseln</button>
+    <h1>Weihnachtsgeschenk-Verschlüsselung</h1>
+    <label for="key">Schlüssel eingeben (Text):</label><br>
+    <input type="text" id="key" placeholder="Schlüssel"><br>
+
+    <label for="inputText">Text eingeben:</label><br>
+    <input type="text" id="inputText" placeholder="Text"><br>
+
+    <button onclick="encrypt()">Verschlüsseln</button>
+    <button onclick="decrypt()">Entschlüsseln</button><br><br>
+
     <p id="result"></p>
+
     <script src="script.js"></script>
 </body>
 </html>
