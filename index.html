@@ -23,6 +23,7 @@
       margin: 0 10px;
       text-decoration: none;
       color: #000;
+      font-size: 1.2rem;
       font-weight: bold;
     }
     .container {
@@ -75,7 +76,7 @@
   <a href="#" onclick="showPage('page2')">Sudoku</a>
   <a href="#" onclick="showPage('page3')">Kreuzworträtsel</a>
   <a href="#" onclick="showPage('page4')">Hardest Game</a>
-  <a href="#" onclick="showPage('page5')">Musikrätsel</a>
+  <a href="#" onclick="showPage('page5')">Hörspiel</a>
   <a href="#" onclick="showPage('decoder')">Decoder</a>
 </nav>
 
@@ -102,7 +103,7 @@
 <div id="page2" class="container">
   <h2>Rätsel 1: Weihnachtssudoku</h2>
   <p>Rufus hat ein Weihnachtssudoku versteckt (leider ist sein Bewegungsradius etwas eingeschränkt).
-    Alle Informationen zum Lösungscode sind auf dem Sudoku enthalten. Etwas kleber wird nicht schaden 😉</p>
+    Alle Informationen zum Lösungscode sind auf dem Sudoku enthalten. Etwas Kleber wird nicht schaden 😉</p>
 </div>
 
 <!-- Seite 3: Kreuzworträtsel -->
@@ -168,7 +169,7 @@ function showPage(pageId) {
   }
 }
 
-// finale Entschlüsselung
+// Entschlüsseln mit neuem Algorithmus, der alle Ziffern berücksichtigt
 function finalDecrypt() {
   const code1 = document.getElementById('code1').value.trim();
   const code2 = document.getElementById('code2').value.trim();
@@ -181,27 +182,42 @@ function finalDecrypt() {
     return;
   }
 
-  const key = code1 + code2 + code3 + code4;
+  // Key zusammenbauen
+  const key = code1 + code2 + code3 + code4; // z. B. "2344851673126921"
 
   // Entschlüsseln
   const decrypted = decryptText(encryptedText.toUpperCase(), key);
   document.getElementById('decryptedResult').textContent = "Ergebnis: " + decrypted;
 }
 
-// Entschlüsselungsfunktion
+/**
+ * Entschlüsseln nach dem Prinzip:
+ *  1) Summiere alle Ziffern im Key => totalShift (mod 26)
+ *  2) Für den i-ten Buchstaben => shift = (totalShift + i) mod 26
+ *  3) newChar = (cipher[i] - shift) (Wrap-around von A-Z)
+ */
 function decryptText(cipher, key) {
   let result = "";
+  
+  // 1) Summe aller Ziffern => totalShift
+  let totalShift = 0;
+  for (let i = 0; i < key.length; i++) {
+    totalShift += parseInt(key[i], 10) || 0;
+  }
+  totalShift = totalShift % 26; // Basis-Shift
+
+  // 2) Für jeden Buchstaben
   for (let i = 0; i < cipher.length; i++) {
     const c = cipher.charCodeAt(i);
     if (c >= 65 && c <= 90) { // A-Z
-      const shift = parseInt(key[i % key.length], 10) || 0;
-      let newChar = c - shift;
+      const shiftForThisChar = (totalShift + i) % 26;
+      let newChar = c - shiftForThisChar;
       if (newChar < 65) {
-        newChar = 90 - (64 - newChar); // wrap-around
+        newChar += 26; // Wrap-around
       }
       result += String.fromCharCode(newChar);
     } else {
-      // Nicht-A-Z einfach übernehmen
+      // Nicht-A-Z: unverändert
       result += cipher[i];
     }
   }

@@ -65,7 +65,6 @@
 <p id="result"></p>
 
 <script>
-// Admin-Seite: Verschlüsseln
 function adminEncrypt() {
   const code1 = document.getElementById('code1').value.trim();
   const code2 = document.getElementById('code2').value.trim();
@@ -86,15 +85,30 @@ function adminEncrypt() {
   document.getElementById('result').textContent = "Verschlüsselt: " + encrypted;
 }
 
+/**
+ * Verschlüsseln nach dem Prinzip:
+ *  1) Summiere alle Ziffern im Key => totalShift (mod 26)
+ *  2) Für den i-ten Buchstaben => shift = (totalShift + i) mod 26
+ *  3) newChar = (plain[i] + shift) (Wrap-around von A-Z)
+ */
 function encryptText(plain, key) {
   let result = "";
+
+  // 1) Summe aller Ziffern => totalShift
+  let totalShift = 0;
+  for (let i = 0; i < key.length; i++) {
+    totalShift += parseInt(key[i], 10) || 0;
+  }
+  totalShift = totalShift % 26; // Basis-Shift
+
+  // 2) Für jeden Buchstaben
   for (let i = 0; i < plain.length; i++) {
     const c = plain.charCodeAt(i);
     if (c >= 65 && c <= 90) { // A-Z
-      const shift = parseInt(key[i % key.length], 10) || 0;
-      let newChar = c + shift;
+      const shiftForThisChar = (totalShift + i) % 26;
+      let newChar = c + shiftForThisChar;
       if (newChar > 90) {
-        newChar = 65 + (newChar - 91); // wrap-around
+        newChar -= 26; // Wrap-around
       }
       result += String.fromCharCode(newChar);
     } else {
