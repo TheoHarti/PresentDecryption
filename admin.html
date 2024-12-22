@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Encoder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 200px;
+      padding: 5px;
+      margin-top: 5px;
+    }
+    .code-input {
+      width: 60px;
+      padding: 5px;
+      text-align: center;
+      margin: 5px;
+      font-size: 1.1em;
+    }
+    .btn {
+      padding: 8px 16px;
+      margin: 10px 0;
+      cursor: pointer;
+      background-color: #b22222;
+      color: #fff;
+      border: none;
+      font-size: 1em;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Admin: Encoder</h1>
+<p>Gib hier deine 4 Rätsel-Codes ein und den Klartext (Name), um einen verschlüsselten Text zu erzeugen.</p>
+
+<div>
+  <label>Code 1:</label>
+  <input type="text" id="code1" class="code-input" maxlength="4" placeholder="z.B. 2344">
+  <label>Code 2:</label>
+  <input type="text" id="code2" class="code-input" maxlength="4" placeholder="z.B. 8516">
+  <label>Code 3:</label>
+  <input type="text" id="code3" class="code-input" maxlength="4" placeholder="z.B. 7312">
+  <label>Code 4:</label>
+  <input type="text" id="code4" class="code-input" maxlength="4" placeholder="z.B. 6921">
+</div>
+
+<div>
+  <label>Klartext (Name):</label>
+  <input type="text" id="plainName" placeholder="z.B. MAMA">
+</div>
+
+<button class="btn" onclick="adminEncrypt()">Verschlüsseln</button>
+
+<p id="result"></p>
+
+<script>
+// Admin-Seite: Verschlüsseln
+function adminEncrypt() {
+  const code1 = document.getElementById('code1').value.trim();
+  const code2 = document.getElementById('code2').value.trim();
+  const code3 = document.getElementById('code3').value.trim();
+  const code4 = document.getElementById('code4').value.trim();
+  const plainName = document.getElementById('plainName').value.trim();
+
+  if (!code1 || !code2 || !code3 || !code4 || !plainName) {
+    alert("Bitte alle vier Codes und einen Namen eingeben!");
+    return;
+  }
+
+  // Key generieren
+  const key = code1 + code2 + code3 + code4;
+
+  // Verschlüsseln
+  const encrypted = encryptText(plainName.toUpperCase(), key);
+  document.getElementById('result').textContent = "Verschlüsselt: " + encrypted;
+}
+
+function encryptText(plain, key) {
+  let result = "";
+  for (let i = 0; i < plain.length; i++) {
+    const c = plain.charCodeAt(i);
+    if (c >= 65 && c <= 90) { // A-Z
+      const shift = parseInt(key[i % key.length], 10) || 0;
+      let newChar = c + shift;
+      if (newChar > 90) {
+        newChar = 65 + (newChar - 91); // wrap-around
+      }
+      result += String.fromCharCode(newChar);
+    } else {
+      // Nicht A-Z: unverändert
+      result += plain[i];
+    }
+  }
+  return result;
+}
+</script>
+
+</body>
+</html>

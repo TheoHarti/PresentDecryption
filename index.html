@@ -1,77 +1,213 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Weihnachtsgeschenk-Verschlüsselung</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        input, button {
-            margin: 10px 0;
-            padding: 10px;
-            width: 200px;
-        }
-        button {
-            cursor: pointer;
-        }
-        .page { 
-            display: none; 
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Weihnachtsrätsel 2024</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+    }
+    header {
+      background-color: #b22222;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+    nav {
+      background-color: #f2f2f2;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #000;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      display: none; /* alle erst mal unsichtbar */
+    }
+    .active {
+      display: block; /* nur aktive Seite wird angezeigt */
+    }
+    .center {
+      text-align: center;
+    }
+    .code-input {
+      width: 60px;
+      padding: 5px;
+      text-align: center;
+      margin: 5px;
+      font-size: 1.1em;
+    }
+    .btn {
+      padding: 8px 16px;
+      margin: 10px;
+      cursor: pointer;
+      background-color: #b22222;
+      color: #fff;
+      border: none;
+      font-size: 1em;
+    }
+    #decryptedResult {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    /* Anpassung für kleine Bildschirme */
+    @media (max-width: 600px) {
+      nav a {
+        display: block;
+        margin: 5px 0;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="welcomePage" class="page" style="display:block;">
-        <h1>Willkommen zum Weihnachtsrätsel!</h1>
-        <p>Wenn ihr bis zum Ende kommt, könnt ihr die Namen auf den Geschenken entschlüsseln <br/>und dürft sie aufmachen. Sonst geht ihr leer aus. &#x1F608;</p>
-        <button onclick="goToNextStep(1)">Beginnen</button>
-    </div>
 
-    <div id="riddlePage1" class="page">
-        <h2>Rätsel 1</h2>
-        <p>Wie gut haben euch die Gyoza heute geschmeckt (Ranking out of 10)?</p>
-        <input type="text" id="answer1" placeholder="Antwort"><br>
-        <button onclick="checkAnswer(1, '11')">Weiter</button>
-    </div>
+<header>
+  <h1>Weihnachtsrätsel 2024</h1>
+</header>
 
-    <div id="riddlePage2" class="page">
-        <h2>Rätsel 2</h2>
-        <p>Was ist das aktuelle österreichische Padel Ranking von Theo (in Punkten)?</p>
-        <input type="text" id="answer2" placeholder="Antwort"><br>
-        <button onclick="checkAnswer(2, '1470')">Weiter</button>
-    </div>
+<nav>
+  <a href="#" onclick="showPage('welcome')">Start</a>
+  <a href="#" onclick="showPage('page2')">Sudoku</a>
+  <a href="#" onclick="showPage('page3')">Kreuzworträtsel</a>
+  <a href="#" onclick="showPage('page4')">Hardest Game</a>
+  <a href="#" onclick="showPage('page5')">Musikrätsel</a>
+  <a href="#" onclick="showPage('decoder')">Decoder</a>
+</nav>
 
-    <div id="riddlePage3" class="page">
-        <h2>Rätsel 3</h2>
-        <img src="riddle3.png" alt="Bilderrätsel" style="max-width:700px;height:auto;">
-        <br/>
-        <input type="text" id="answer3" placeholder="Antwort"><br>
-        <button onclick="checkAnswer(3, '052')">Weiter</button>
-    </div>
+<!-- Seite 1: Willkommen/Regeln -->
+<div id="welcome" class="container active">
+  <h2>Willkommen zum Weihnachtsrätsel!</h2>
+  <p>Hallo liebe Familie!<br>
+    Auf diesen Seiten findet ihr vier Rätsel. Über die Navigationsleiste oben könnt ihr hin und her wechseln.
+    Jedes Rätsel hat einen 4-stelligen Zahlencode als Lösung. Also diese immer genau notieren. 
+    Am Schluss auf der letzen Seite gebt ihr die vier 4-stelligen Codes in den Decoder ein, plus den verschlüsselten Namen auf den Geschenken, 
+    und drückt auf "Entschlüsseln". Wenn alles passt, seht ihr den richtigen Klartext!</p>
+  <p><strong>Regeln:</strong></p>
+  <ul>
+    <li>Rätsel in beliebiger Reihenfolge lösen</li>
+    <li>Jeder Code = 4 Ziffern</li>
+    <li>Decoder nutzen, 4 Codes + verschlüsselter Name</li>
+    <li>Viel Spaß und frohe Weihnachten!</li>
+  </ul>
+  <p>Am besten ihr seht euch die Seite auf dem PC an.</p>
+  <p><strong>Wichtig: Alle Texte in GROßBUCHSTABEN eingeben</strong></p>
+</div>
 
-    <div id="riddlePage4" class="page">
-        <h2>Rätsel 4</h2>
-        <p>Ihr habt 3 Minuten Zeit um ein geheimes Passwort am Christbaum zu finden.</p>
-        <p id="timer">03:00</p>
-        <input type="text" id="answer4" placeholder="Antwort"><br>
-        <button id="nextButton" onclick="checkAnswer(4, 'quokka')">Zur Entschlüsselung</button>
-    </div>
+<!-- Seite 2: Sudoku -->
+<div id="page2" class="container">
+  <h2>Rätsel 1: Weihnachtssudoku</h2>
+  <p>Rufus hat ein Weihnachtssudoku versteckt (leider ist sein Bewegungsradius etwas eingeschränkt).
+    Alle Informationen zum Lösungscode sind auf dem Sudoku enthalten. Etwas kleber wird nicht schaden 😉</p>
+</div>
 
-    <div id="finalPage" class="page">
-        <h1>Weihnachtsgeschenk-Entschlüsselung</h1>
-        <label for="key">Schlüssel eingeben (Text):</label><br>
-        <input type="text" id="key" placeholder="Schlüssel"><br>
-    
-        <label for="inputText">Text eingeben:</label><br>
-        <input type="text" id="inputText" placeholder="Text"><br>
-    
-        <button onclick="encrypt()">Verschlüsseln</button>
-        <button onclick="decrypt()">Entschlüsseln</button><br><br>
-    
-        <p id="result"></p>
-    </div>
+<!-- Seite 3: Kreuzworträtsel -->
+<div id="page3" class="container">
+  <h2>Rätsel 2: Kreuzworträtsel</h2>
+  <p>Ich wollte es unter den Baum legen, aber leider hat es eine blaue Zau gestohlen. Ich denke sie hat das Rätsel in ihr Lager mitgenommen.
+     Die nummerierten Felder (1,2,3,4) enthalten nach dem ausfüllen Buchstaben, die in Alphabet-Zahlen umgewandelt werden (A=1, ..., Z=26) müssen.  
+     So entsteht der 4-stelliger Code.</p>
+</div>
 
-    <script src="script.js"></script>
+<!-- Seite 4: Hardest Game -->
+<div id="page4" class="container">
+  <h2>Rätsel 3: Pro Gamer</h2>
+  <p>Um an den Lösungscode zu kommen müsst ihr das Online Spiel <a href="https://www.crazygames.com/game/worlds-hardest-game" target="_blank">World's Hardest Game</a> bis Level 8 durchspielen.  
+     Zählt dort:</p>
+  <ol>
+    <li>Anzahl blaue Punkte</li>
+    <li>Anzahl gelbe Punkte</li>
+    <li>Anzahl rote Vierecke</li>
+    <li>Anzahl grüne Vierecke</li>
+  </ol>
+  <p>Daraus erhaltet ihr den vierstelligen Code</p>
+</div>
+
+<!-- Seite 5: Hörspiel -->
+<div id="page5" class="container">
+  <h2>Rätsel 4: Hörspiel</h2>
+  <p>Wenn ihr auf play klickt hört ihr ein Lied, dass ich gesungen und produced habe. 
+    Dabei habe ich 4 Ziffern in den Songtext gemixed, die irgendwo auftauchen. 
+    Die Ziffern in der Reihenfolge wie sie gesungen werden ergeben den Lösungscode.</p>
+  <div class="center">
+    <audio id="audioPlayer" src="song.mp3" controls></audio>
+  </div>
+</div>
+
+<!-- Seite 6: Decoder -->
+<div id="decoder" class="container">
+  <h2>Decoder</h2>
+  <p>Hier gebt ihr die vier 4-stelligen Codes ein, plus den verschlüsselten Namen.  
+     Wenn ihr dann "Entschlüsseln" drückt und alles richtig ist, sollte der lesbare Name erscheinen.</p>
+
+  <div class="center">
+    <input type="text" id="code1" class="code-input" maxlength="4" placeholder="Code1">
+    <input type="text" id="code2" class="code-input" maxlength="4" placeholder="Code2">
+    <input type="text" id="code3" class="code-input" maxlength="4" placeholder="Code3">
+    <input type="text" id="code4" class="code-input" maxlength="4" placeholder="Code4">
+    <br><br>
+    <input type="text" id="encryptedName" placeholder="Verschlüsselter Name" style="width: 250px; padding: 5px;">
+    <br>
+    <button class="btn" onclick="finalDecrypt()">Entschlüsseln</button>
+    <p id="decryptedResult"></p>
+  </div>
+</div>
+
+<script>
+// Einfache Seiten-Navigation
+function showPage(pageId) {
+  const containers = document.querySelectorAll('.container');
+  containers.forEach(c => c.classList.remove('active'));
+  const pageToShow = document.getElementById(pageId);
+  if (pageToShow) {
+    pageToShow.classList.add('active');
+  }
+}
+
+// finale Entschlüsselung
+function finalDecrypt() {
+  const code1 = document.getElementById('code1').value.trim();
+  const code2 = document.getElementById('code2').value.trim();
+  const code3 = document.getElementById('code3').value.trim();
+  const code4 = document.getElementById('code4').value.trim();
+  const encryptedText = document.getElementById('encryptedName').value.trim();
+
+  if (!code1 || !code2 || !code3 || !code4 || !encryptedText) {
+    alert("Bitte alle 4 Codes und einen verschlüsselten Namen eingeben!");
+    return;
+  }
+
+  const key = code1 + code2 + code3 + code4;
+
+  // Entschlüsseln
+  const decrypted = decryptText(encryptedText.toUpperCase(), key);
+  document.getElementById('decryptedResult').textContent = "Ergebnis: " + decrypted;
+}
+
+// Entschlüsselungsfunktion
+function decryptText(cipher, key) {
+  let result = "";
+  for (let i = 0; i < cipher.length; i++) {
+    const c = cipher.charCodeAt(i);
+    if (c >= 65 && c <= 90) { // A-Z
+      const shift = parseInt(key[i % key.length], 10) || 0;
+      let newChar = c - shift;
+      if (newChar < 65) {
+        newChar = 90 - (64 - newChar); // wrap-around
+      }
+      result += String.fromCharCode(newChar);
+    } else {
+      // Nicht-A-Z einfach übernehmen
+      result += cipher[i];
+    }
+  }
+  return result;
+}
+</script>
+
 </body>
 </html>
