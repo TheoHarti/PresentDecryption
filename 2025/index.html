@@ -8,15 +8,15 @@
 <body>
   <header>
     <h1>Weihnachtsraetsel 2025</h1>
-    <p class="note">Vier Raetsel, vier Codes, ein Decoder. Alle Texte und Eingaben bitte in GROSSBUCHSTABEN.</p>
+    <p class="note">Vier Raetsel, vier Codes, ein Decoder. Seite nicht neu laden!</p>
   </header>
 
   <nav>
     <a href="#" data-target="start" onclick="showPage(event)">Start</a>
-    <a href="#" data-target="terminal" onclick="showPage(event)">Terminal-Abenteuer</a>
+    <a href="#" data-target="terminal" onclick="showPage(event)">Text-Abenteuer</a>
     <a href="#" data-target="beep" onclick="showPage(event)">Beep Bep Beep</a>
-    <a href="#" data-target="password" onclick="showPage(event)">Passwort-Spiel</a>
-    <a href="#" data-target="browser" onclick="showPage(event)">Browser-Spielereien</a>
+    <a href="#" data-target="password" onclick="showPage(event)">Passwort eingeben</a>
+    <a href="#" data-target="browser" onclick="showPage(event)">Browser Games</a>
     <a href="#" data-target="decoder" onclick="showPage(event)">Decoder</a>
   </nav>
 
@@ -25,10 +25,10 @@
       <h2>Willkommen</h2>
       <p>Ihr bekommt vier 4-stellige Codes:</p>
       <ol>
-        <li>Terminal-Abenteuer</li>
+        <li>Text-Abenteuer</li>
         <li>Beep Bep Beep</li>
-        <li>Passwort-Spiel</li>
-        <li>Browser-Spielereien (4 Mini-Aufgaben ergeben zusammen einen Code)</li>
+        <li>Passwort eingeben</li>
+        <li>Browser Games</li>
       </ol>
       <p>Notiert jeden Code. Im Decoder tragt ihr alle vier Codes und den verschluesselten Namen vom Geschenk ein, dann erhaltet ihr den Klartext.</p>
       <p class="note">Tipp: Desktop im Querformat ist am bequemsten.</p>
@@ -37,13 +37,13 @@
 
   <section id="terminal" class="page">
     <div class="card">
-      <h2>Raetsel 1: Altes Terminal</h2>
-      <p>Ein kleines Text-Abenteuer. Gib Befehle wie <span class="tag">UMSEHEN</span>, <span class="tag">GEHE VORWAERTS</span>, <span class="tag">NIMM LAMPE</span>, <span class="tag">ZUENDE LAMPE AN</span>, <span class="tag">BETRETE HUETTE</span>, <span class="tag">OEFFNE KISTE</span>. Alles auf Deutsch und gern in ganzen Saetzen.</p>
+      <h2>Raetsel 1: Text-Abenteuer</h2>
+      <p>Erkunde einen geheimnisvollen Wald. Gib Befehle wie <span class="tag">UMSEHEN</span>, <span class="tag">GEHE NACH NORDEN</span>, <span class="tag">NIMM DIE LAMPE</span>, <span class="tag">ZÜNDE LAMPE AN</span>, <span class="tag">BETRETE HUETTE</span>, <span class="tag">OEFFNE KISTE</span>. Groß- oder Kleinschreibung erlaubt, Umlaute erlaubt, ganze Saetze auch!</p>
       <div class="terminal">
         <div id="terminalLog" class="terminal-log"></div>
-        <input id="terminalInput" class="terminal-input" placeholder="Befehl eingeben und Enter druecken" onkeydown="if(event.key==='Enter'){handleTerminalCommand();}" autocomplete="off" />
+        <input id="terminalInput" class="terminal-input" placeholder="Befehl eingeben und Enter drücken" onkeydown="if(event.key==='Enter'){handleTerminalCommand();}" autocomplete="off" />
       </div>
-      <p class="note">Befehl <span class="tag">HILFE</span> listet Vorschlaege. <span class="tag">RESTART</span> setzt alles zurueck.</p>
+      <p class="note">Befehl <span class="tag">HILFE</span> listet Vorschläge. <span class="tag">RESTART</span> setzt alles zurück.</p>
       <p id="terminalCodeHint" class="digit-pill"></p>
     </div>
   </section>
@@ -128,7 +128,7 @@
       <h2>Decoder</h2>
       <p>Tragt die vier Codes (Reihenfolge wie in der Navigation) und den verschluesselten Namen ein. Ergebnis erscheint darunter.</p>
       <div class="input-row">
-        <input id="code1" class="code-input" maxlength="4" placeholder="Terminal">
+        <input id="code1" class="code-input" maxlength="4" placeholder="Text-Abenteuer">
         <input id="code2" class="code-input" maxlength="4" placeholder="Beep Bep Beep">
         <input id="code3" class="code-input" maxlength="4" placeholder="Passwort">
         <input id="code4" class="code-input" maxlength="4" placeholder="Browser">
