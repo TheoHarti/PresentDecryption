@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Weihnachtsraetsel 2025</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Weihnachtsraetsel 2025</h1>
+    <p class="note">Vier Raetsel, vier Codes, ein Decoder. Alle Texte und Eingaben bitte in GROSSBUCHSTABEN.</p>
+  </header>
+
+  <nav>
+    <a href="#" data-target="start" onclick="showPage(event)">Start</a>
+    <a href="#" data-target="terminal" onclick="showPage(event)">Terminal-Abenteuer</a>
+    <a href="#" data-target="beep" onclick="showPage(event)">Beep Bep Beep</a>
+    <a href="#" data-target="password" onclick="showPage(event)">Passwort-Spiel</a>
+    <a href="#" data-target="browser" onclick="showPage(event)">Browser-Spielereien</a>
+    <a href="#" data-target="decoder" onclick="showPage(event)">Decoder</a>
+  </nav>
+
+  <section id="start" class="page active">
+    <div class="card">
+      <h2>Willkommen</h2>
+      <p>Ihr bekommt vier 4-stellige Codes:</p>
+      <ol>
+        <li>Terminal-Abenteuer</li>
+        <li>Beep Bep Beep</li>
+        <li>Passwort-Spiel</li>
+        <li>Browser-Spielereien (4 Mini-Aufgaben ergeben zusammen einen Code)</li>
+      </ol>
+      <p>Notiert jeden Code. Im Decoder tragt ihr alle vier Codes und den verschluesselten Namen vom Geschenk ein, dann erhaltet ihr den Klartext.</p>
+      <p class="note">Tipp: Desktop im Querformat ist am bequemsten.</p>
+    </div>
+  </section>
+
+  <section id="terminal" class="page">
+    <div class="card">
+      <h2>Raetsel 1: Altes Terminal</h2>
+      <p>Ein kleines Text-Abenteuer. Gib Befehle wie <span class="tag">UMSEHEN</span>, <span class="tag">GEHE VORWAERTS</span>, <span class="tag">NIMM LAMPE</span>, <span class="tag">ZUENDE LAMPE AN</span>, <span class="tag">BETRETE HUETTE</span>, <span class="tag">OEFFNE KISTE</span>. Alles auf Deutsch und gern in ganzen Saetzen.</p>
+      <div class="terminal">
+        <div id="terminalLog" class="terminal-log"></div>
+        <input id="terminalInput" class="terminal-input" placeholder="Befehl eingeben und Enter druecken" onkeydown="if(event.key==='Enter'){handleTerminalCommand();}" autocomplete="off" />
+      </div>
+      <p class="note">Befehl <span class="tag">HILFE</span> listet Vorschlaege. <span class="tag">RESTART</span> setzt alles zurueck.</p>
+      <p id="terminalCodeHint" class="digit-pill"></p>
+    </div>
+  </section>
+
+  <section id="beep" class="page">
+    <div class="card">
+      <h2>Beep Bep Beep</h2>
+      <div class="beep-list">
+        <div class="beep-item">
+          <span class="digit-pill">Clip 1</span>
+          <audio controls preload="auto" src="morseSounds/morseNr1.wav"></audio>
+        </div>
+        <div class="beep-item">
+          <span class="digit-pill">Clip 2</span>
+          <audio controls preload="auto" src="morseSounds/morseNr2.wav"></audio>
+        </div>
+        <div class="beep-item">
+          <span class="digit-pill">Clip 3</span>
+          <audio controls preload="auto" src="morseSounds/morseNr3.wav"></audio>
+        </div>
+        <div class="beep-item">
+          <span class="digit-pill">Clip 4</span>
+          <audio controls preload="auto" src="morseSounds/morseNr4.wav"></audio>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="password" class="page">
+    <div class="card">
+      <h2>Raetsel 3: Passwort-Spiel</h2>
+      <p>Baue ein Passwort, das alle 10 Bedingungen erfuellt. Wenn alle gruen sind, erscheint der Code.</p>
+      <input id="passwordInput" class="name-input" placeholder="Passwort hier eintippen" oninput="checkPassword()" />
+      <ul id="rules" class="rule-list"></ul>
+      <p id="passwordCode" class="digit-pill"></p>
+    </div>
+  </section>
+
+  <section id="browser" class="page">
+    <div class="card">
+      <h2>Raetsel 4: Browser-Spielereien</h2>
+      <p>Vier Mini-Aufgaben, jede enthaelt eine Ziffer. In Reihenfolge notieren: 1) Breite, 2) Taschenlampe, 3) Familien-CAPTCHA, 4) Klopf-Knopf.</p>
+      <div class="mini-grid">
+        <div class="mini-card">
+          <h3>"Ich fuehle mich so breit ..."</h3>
+          <p>Verkleinert das Browserfenster unter 800px Breite. Dann zeigt sich eine Ziffer.</p>
+          <p id="resizeDigit" class="digit-pill"></p>
+        </div>
+        <div class="mini-card">
+          <h3>Taschenlampen-Effekt</h3>
+          <p>Bewegt die Maus ueber das dunkle Feld. Im Lichtkreis versteckt sich eine Ziffer.</p>
+          <div class="torch-zone" onmousemove="updateTorch(event)" onmouseleave="resetTorch()">
+            <div class="torch-secret" aria-hidden="true">Zahl: 9</div>
+            <div id="torchMask" class="torch-mask"></div>
+          </div>
+          <p id="torchDigit" class="digit-pill"></p>
+        </div>
+        <div class="mini-card">
+          <h3>Familien-CAPTCHA</h3>
+          <p>Waehlt alle Karten mit <strong>HUND</strong> aus und klickt auf Pruefen.</p>
+          <div id="captchaGrid" class="captcha-grid"></div>
+          <button class="btn" onclick="checkCaptcha()">Pruefen</button>
+          <p id="captchaDigit" class="digit-pill"></p>
+        </div>
+        <div class="mini-card">
+          <h3>Klopf dreimal</h3>
+          <p>Klickt den Button dreimal, dann klappert eine Ziffer heraus.</p>
+          <button class="btn" onclick="registerKnock()">Klopf!</button>
+          <p id="knockDigit" class="digit-pill"></p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <strong>Gefundener Code (Browser-Spielereien):</strong>
+        <span id="browserCodeDisplay" class="digit-pill"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="decoder" class="page">
+    <div class="card">
+      <h2>Decoder</h2>
+      <p>Tragt die vier Codes (Reihenfolge wie in der Navigation) und den verschluesselten Namen ein. Ergebnis erscheint darunter.</p>
+      <div class="input-row">
+        <input id="code1" class="code-input" maxlength="4" placeholder="Terminal">
+        <input id="code2" class="code-input" maxlength="4" placeholder="Beep Bep Beep">
+        <input id="code3" class="code-input" maxlength="4" placeholder="Passwort">
+        <input id="code4" class="code-input" maxlength="4" placeholder="Browser">
+      </div>
+      <div class="input-row" style="margin-top:10px;">
+        <input id="encryptedName" class="name-input" placeholder="VERSCHLUESSELTER NAME IN GROSSBUCHSTABEN">
+      </div>
+      <button class="btn" onclick="finalDecrypt()">Entschluesseln</button>
+      <div id="decryptedResult" class="result-box"></div>
+    </div>
+  </section>
+
+<script src="app.js"></script>
+</body>
+</html>

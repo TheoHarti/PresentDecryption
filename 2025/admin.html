@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Encoder 2025</title>
+  <style>
+    body { font-family: "Fira Code", "Consolas", "Segoe UI", sans-serif; margin: 20px; background: #0b1b1f; color: #e9f0f2; }
+    h1 { margin-top: 0; }
+    label { display: block; margin-top: 12px; }
+    input { width: 240px; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid #1d3c44; background: #0f2027; color: #e9f0f2; }
+    .code-input { width: 90px; text-align: center; }
+    .btn { padding: 10px 16px; margin-top: 14px; cursor: pointer; background-color: #d43d3d; color: #fff; border: none; border-radius: 6px; font-weight: 700; }
+    #result { margin-top: 16px; font-weight: bold; }
+    .note { color: #8aa0a6; }
+  </style>
+</head>
+<body>
+<h1>Admin: Encoder 2025</h1>
+<p>Gib die vier Codes (Terminal, Beep Bep Beep, Passwort-Spiel, Browser-Spielereien) und den Klartext-Namen ein. Ergebnis ist der verschluesselte String fuer die Geschenke.</p>
+<p class="note">Die Besucher sehen die Codes ueber die Raetsel: 1) Terminal-Abenteuer, 2) Beep Bep Beep, 3) Passwort-Spiel, 4) Browser-Minis.</p>
+
+<div>
+  <label>Code 1 (Terminal):</label>
+  <input type="text" id="code1" class="code-input" maxlength="4" placeholder="z.B. 1111">
+  <label>Code 2 (Beep Bep Beep):</label>
+  <input type="text" id="code2" class="code-input" maxlength="4" placeholder="z.B. 2222">
+  <label>Code 3 (Passwort):</label>
+  <input type="text" id="code3" class="code-input" maxlength="4" placeholder="z.B. 3333">
+  <label>Code 4 (Browser):</label>
+  <input type="text" id="code4" class="code-input" maxlength="4" placeholder="z.B. 4444">
+</div>
+
+<div>
+  <label>Klartext Name (in GROSSBUCHSTABEN):</label>
+  <input type="text" id="plainName" placeholder="z.B. THEODOR">
+</div>
+
+<button class="btn" onclick="adminEncrypt()">Verschluesseln</button>
+<p id="result"></p>
+
+<script>
+function adminEncrypt() {
+  const code1 = document.getElementById('code1').value.trim();
+  const code2 = document.getElementById('code2').value.trim();
+  const code3 = document.getElementById('code3').value.trim();
+  const code4 = document.getElementById('code4').value.trim();
+  const plain = document.getElementById('plainName').value.trim();
+  if (!code1 || !code2 || !code3 || !code4 || !plain) {
+    alert('Bitte alle vier Codes und einen Namen eingeben.');
+    return;
+  }
+  const key = code1 + code2 + code3 + code4;
+  const encrypted = encryptText(plain.toUpperCase(), key);
+  document.getElementById('result').textContent = 'Verschluesselt: ' + encrypted;
+}
+
+function encryptText(plain, key) {
+  let totalShift = 0;
+  for (let i = 0; i < key.length; i++) {
+    totalShift += parseInt(key[i], 10) || 0;
+  }
+  totalShift = totalShift % 26;
+  let result = '';
+  for (let i = 0; i < plain.length; i++) {
+    const c = plain.charCodeAt(i);
+    if (c >= 65 && c <= 90) {
+      const shift = (totalShift + i) % 26;
+      let newChar = c + shift;
+      if (newChar > 90) newChar -= 26;
+      result += String.fromCharCode(newChar);
+    } else {
+      result += plain[i];
+    }
+  }
+  return result;
+}
+</script>
+</body>
+</html>
