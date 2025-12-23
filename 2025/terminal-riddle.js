@@ -1,4 +1,4 @@
-// Text-Abenteuer - Raetsel 1
+// Text-Abenteuer - Rätsel 1
 const terminalState = {
   location: 'lichtung',
   hasLamp: false,

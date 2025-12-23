@@ -1,4 +1,4 @@
-// Passwort-Spiel - Raetsel 3
+// Passwort-Spiel - Rätsel 3
 const rulesEl = document.getElementById('rules');
 const passwordInputEl = document.getElementById('passwordInput');
 const passwordCode = '6195';

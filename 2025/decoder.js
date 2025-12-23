@@ -7,7 +7,7 @@ function finalDecrypt() {
   const encrypted = document.getElementById('encryptedName').value.trim();
   
   if (!c1 || !c2 || !c3 || !c4 || !encrypted) {
-    document.getElementById('decryptedResult').textContent = 'Bitte alle vier Codes und den verschluesselten Namen eingeben.';
+    document.getElementById('decryptedResult').textContent = 'Bitte alle vier Codes und den verschlüsselten Namen eingeben.';
     return;
   }
   

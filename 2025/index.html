@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Weihnachtsraetsel 2025</title>
+  <title>Weihnachtsrätsel 2025</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <h1>Weihnachtsraetsel 2025</h1>
-    <p class="note">Vier Raetsel, vier Codes, ein Decoder. Seite nicht neu laden!</p>
+    <h1>Weihnachtsrätsel 2025</h1>
+    <p class="note">Vier Rätsel, vier Codes, ein Decoder. Seite nicht neu laden!</p>
   </header>
 
   <nav>
@@ -16,7 +16,7 @@
     <a href="#" data-target="terminal" onclick="showPage(event)">Text-Abenteuer</a>
     <a href="#" data-target="beep" onclick="showPage(event)">Beep Bep Beep</a>
     <a href="#" data-target="password" onclick="showPage(event)">Passwort eingeben</a>
-    <a href="#" data-target="browser" onclick="showPage(event)">Browser Games</a>
+    <a href="#" data-target="einstein" onclick="showPage(event)">Einstein-Rätsel</a>
     <a href="#" data-target="decoder" onclick="showPage(event)">Decoder</a>
   </nav>
 
@@ -28,7 +28,7 @@
         <li>Text-Abenteuer</li>
         <li>Beep Bep Beep</li>
         <li>Passwort eingeben</li>
-        <li>Browser Games</li>
+        <li>Einstein-Rätsel</li>
       </ol>
       <p>Notiert jeden Code. Im Decoder tragt ihr alle vier Codes und den verschluesselten Namen vom Geschenk ein, dann erhaltet ihr den Klartext.</p>
       <p class="note">Tipp: Desktop im Querformat ist am bequemsten.</p>
@@ -37,7 +37,7 @@
 
   <section id="terminal" class="page">
     <div class="card">
-      <h2>Raetsel 1: Text-Abenteuer</h2>
+      <h2>Rätsel 1: Text-Abenteuer</h2>
       <p>Erkunde einen geheimnisvollen Wald. Gib Befehle wie <span class="tag">UMSEHEN</span>, <span class="tag">GEHE NACH NORDEN</span>, <span class="tag">NIMM DIE LAMPE</span>, <span class="tag">ZÜNDE LAMPE AN</span>, <span class="tag">BETRETE HUETTE</span>, <span class="tag">OEFFNE KISTE</span>. Groß- oder Kleinschreibung erlaubt, Umlaute erlaubt, ganze Saetze auch!</p>
       <div class="terminal">
         <div id="terminalLog" class="terminal-log"></div>
@@ -74,7 +74,7 @@
 
   <section id="password" class="page">
     <div class="card password-card">
-      <h2>Raetsel 3: Passwort-Spiel</h2>
+      <h2>Rätsel 3: Passwort-Spiel</h2>
       <p class="password-hint">Bitte wähle ein Passwort aus</p>
       <p id="passwordCode" class="digit-pill"></p>
       <input id="passwordInput" class="password-input" placeholder="Passwort hier eintippen" oninput="checkPassword()" autocomplete="off" />
@@ -83,42 +83,41 @@
     </div>
   </section>
 
-  <section id="browser" class="page">
+  <section id="einstein" class="page einstein-wide">
     <div class="card">
-      <h2>Raetsel 4: Browser-Spielereien</h2>
-      <p>Vier Mini-Aufgaben, jede enthaelt eine Ziffer. In Reihenfolge notieren: 1) Breite, 2) Taschenlampe, 3) Familien-CAPTCHA, 4) Klopf-Knopf.</p>
-      <div class="mini-grid">
-        <div class="mini-card">
-          <h3>"Ich fuehle mich so breit ..."</h3>
-          <p>Verkleinert das Browserfenster unter 800px Breite. Dann zeigt sich eine Ziffer.</p>
-          <p id="resizeDigit" class="digit-pill"></p>
-        </div>
-        <div class="mini-card">
-          <h3>Taschenlampen-Effekt</h3>
-          <p>Bewegt die Maus ueber das dunkle Feld. Im Lichtkreis versteckt sich eine Ziffer.</p>
-          <div class="torch-zone" onmousemove="updateTorch(event)" onmouseleave="resetTorch()">
-            <div class="torch-secret" aria-hidden="true">Zahl: 9</div>
-            <div id="torchMask" class="torch-mask"></div>
+      <h2>Rätsel 4: Visuelles Einstein-Rätsel</h2>
+      <p>Vier Hauser, vier Kategorien (Farbe, Beruf, Tier, Getraenk). Zieht die Plaketten per Drag & Drop auf die passenden Felder. Pro Kategorie wird markiert, sobald alle Zuordnungen dieser Kategorie korrekt liegen. Wenn alles stimmt, erscheint der Code.</p>
+      <div class="einstein-layout">
+        <div class="einstein-houses" id="einsteinHouses"></div>
+        <div class="einstein-bank-col">
+          <div class="card subcard">
+            <h3>Plaketten</h3>
+            <p class="note">Zieht eine Plakette auf ein Feld. Falsche Zuordnung? Einfach zurück in die Ablage ziehen.</p>
+            <div id="tileBank" class="tile-bank"></div>
           </div>
-          <p id="torchDigit" class="digit-pill"></p>
+          <div class="card subcard code-card">
+            <div class="code-label">Code</div>
+            <div id="einsteinCode" class="digit-pill big-pill">_ _ _ _</div>
+            <div id="einsteinStatus" class="note"></div>
+          </div>
         </div>
-        <div class="mini-card">
-          <h3>Familien-CAPTCHA</h3>
-          <p>Waehlt alle Karten mit <strong>HUND</strong> aus und klickt auf Pruefen.</p>
-          <div id="captchaGrid" class="captcha-grid"></div>
-          <button class="btn" onclick="checkCaptcha()">Pruefen</button>
-          <p id="captchaDigit" class="digit-pill"></p>
+        <div class="einstein-clue-col">
+          <div class="card subcard">
+            <h3>Hinweise</h3>
+            <ul class="clue-list">
+              <li>Kaffee wird im ganz linken Haus getrunken.</li>
+              <li>Das blaue Haus steht ganz links.</li>
+              <li>Der Pinguin wohnt direkt rechts vom Wal im Haus 3.</li>
+              <li>Der Programmierer wohnt im roten Haus.</li>
+              <li>Tee wird neben dem Pinguin getrunken.</li>
+              <li>Ganz rechts sitzt der Fuchs.</li>
+              <li>Im roten Haus schwimmt der Wal.</li>
+              <li>Die Taucherin wohnt im grünen Haus.</li>
+              <li>Im gelben Haus wohnt der Bäcker.</li>
+              <li>Das Haus mit Kakao steht direkt neben dem mit Limo.</li>
+            </ul>
+          </div>
         </div>
-        <div class="mini-card">
-          <h3>Klopf dreimal</h3>
-          <p>Klickt den Button dreimal, dann klappert eine Ziffer heraus.</p>
-          <button class="btn" onclick="registerKnock()">Klopf!</button>
-          <p id="knockDigit" class="digit-pill"></p>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px;">
-        <strong>Gefundener Code (Browser-Spielereien):</strong>
-        <span id="browserCodeDisplay" class="digit-pill"></span>
       </div>
     </div>
   </section>
@@ -126,17 +125,28 @@
   <section id="decoder" class="page">
     <div class="card">
       <h2>Decoder</h2>
-      <p>Tragt die vier Codes (Reihenfolge wie in der Navigation) und den verschluesselten Namen ein. Ergebnis erscheint darunter.</p>
-      <div class="input-row">
-        <input id="code1" class="code-input" maxlength="4" placeholder="Text-Abenteuer">
-        <input id="code2" class="code-input" maxlength="4" placeholder="Beep Bep Beep">
-        <input id="code3" class="code-input" maxlength="4" placeholder="Passwort">
-        <input id="code4" class="code-input" maxlength="4" placeholder="Browser">
+      <p>Tragt die vier Codes (Reihenfolge wie in der Navigation) und den verschlüsselten Namen ein. Ergebnis erscheint darunter.</p>
+      <div>
+        <label>Code 1 (Text-Abenteuer):</label>
+        <input id="code1" class="code-input" maxlength="4" placeholder="z.B. 1111">
       </div>
-      <div class="input-row" style="margin-top:10px;">
-        <input id="encryptedName" class="name-input" placeholder="VERSCHLUESSELTER NAME IN GROSSBUCHSTABEN">
+      <div>
+        <label>Code 2 (Beep Bep Beep):</label>
+        <input id="code2" class="code-input" maxlength="4" placeholder="z.B. 2222">
       </div>
-      <button class="btn" onclick="finalDecrypt()">Entschluesseln</button>
+      <div>
+        <label>Code 3 (Passwort-Spiel):</label>
+        <input id="code3" class="code-input" maxlength="4" placeholder="z.B. 3333">
+      </div>
+      <div>
+        <label>Code 4 (Einstein-Rätsel):</label>
+        <input id="code4" class="code-input" maxlength="4" placeholder="z.B. 4444">
+      </div>
+      <div style="margin-top:10px;">
+        <label>Verschlüsselter Name (in GROSSBUCHSTABEN):</label>
+        <input id="encryptedName" class="name-input" placeholder="z.B. THEODOR">
+      </div>
+      <button class="btn" onclick="finalDecrypt()">Entschlüsseln</button>
       <div id="decryptedResult" class="result-box"></div>
     </div>
   </section>
@@ -144,7 +154,7 @@
   <script src="app.js"></script>
   <script src="terminal-riddle.js"></script>
   <script src="password-riddle.js"></script>
-  <script src="browser-riddle.js"></script>
+  <script src="einstein-riddle.js"></script>
   <script src="decoder.js"></script>
 </body>
 </html>
