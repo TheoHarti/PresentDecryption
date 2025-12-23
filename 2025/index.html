@@ -73,12 +73,13 @@
   </section>
 
   <section id="password" class="page">
-    <div class="card">
+    <div class="card password-card">
       <h2>Raetsel 3: Passwort-Spiel</h2>
-      <p>Baue ein Passwort, das alle 10 Bedingungen erfuellt. Wenn alle gruen sind, erscheint der Code.</p>
-      <input id="passwordInput" class="name-input" placeholder="Passwort hier eintippen" oninput="checkPassword()" />
-      <ul id="rules" class="rule-list"></ul>
+      <p class="password-hint">Bitte wähle ein Passwort aus</p>
       <p id="passwordCode" class="digit-pill"></p>
+      <input id="passwordInput" class="password-input" placeholder="Passwort hier eintippen" oninput="checkPassword()" autocomplete="off" />
+      <div id="ruleCounter" class="rule-counter"></div>
+      <ul id="rules" class="rule-list"></ul>
     </div>
   </section>
 
@@ -140,6 +141,10 @@
     </div>
   </section>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
+  <script src="terminal-riddle.js"></script>
+  <script src="password-riddle.js"></script>
+  <script src="browser-riddle.js"></script>
+  <script src="decoder.js"></script>
 </body>
 </html>
