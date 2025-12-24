@@ -8,7 +8,7 @@
 <body>
   <header>
     <h1>Weihnachtsrätsel 2025</h1>
-    <p class="note">Vier Rätsel, vier Codes, ein Decoder. Seite nicht neu laden!</p>
+    <p class="note">Vier Rätsel, vier Codes, ein Decoder.</p>
   </header>
 
   <nav>
@@ -23,8 +23,10 @@
   <section id="start" class="page active">
     <div class="card">
       <h2>Willkommen</h2>
-      <p>Es gibt wieder verschiedene Rätsel die ihr Lösen müsst um eure Geschenke entschlüsseln zu können.
-        Für jedes gelöste Rätsel bekommt ihr einen 4-stelligen Code. Hier sind die Rätsel:</p>
+      <p>Es gibt verschiedene Rätsel die ihr Lösen müsst um eure Geschenke entschlüsseln zu können.
+        Ihr könnt oben mit den Buttons zwischen den 4 Rätseln und dem Decoder wechseln.</p>
+        Für jedes gelöste Rätsel bekommt ihr einen 4-stelligen Code. 
+        Das sind die Rätsel:</p>
       <ol>
         <li>Text-Abenteuer</li>
         <li>Beep Bep Beep</li>
@@ -39,12 +41,20 @@
   <section id="terminal" class="page">
     <div class="card">
       <h2>Rätsel 1: Text-Abenteuer</h2>
-      <p>Erkunde einen geheimnisvollen Wald. Gib Befehle wie <span class="tag">UMSEHEN</span>, <span class="tag">GEHE NACH NORDEN</span>, <span class="tag">NIMM DIE LAMPE</span>, <span class="tag">ZÜNDE LAMPE AN</span>, <span class="tag">BETRETE HUETTE</span>, <span class="tag">OEFFNE KISTE</span>. Groß- oder Kleinschreibung erlaubt, Umlaute erlaubt, ganze Saetze auch!</p>
-      <div class="terminal">
+      <p>Es gilt mittels Textbefehlen ein Abenteuer zu bestehen. 
+        Erkunde einen geheimnisvollen Wald. 
+        Gib Befehle wie <span class="tag">umsehen</span>, <span class="tag">gehe nach *richtung*</span>, <span class="tag">nimm *gegenstand*</span>, <span class="tag">betrete *ort*</span>, etc. 
+        Mit dem Hinweis <span class="tag">hilfe</span> bekommst du nochmal alle möglichen Befehle angezeigt.
+        Neustarten geht mit <span class="tag">restart</span>.</p> 
+        Groß- oder Kleinschreibung erlaubt, Umlaute oder Umformulierung erlaubt, ganze Sätze auch!</p>
+        Falls es mal nicht weitergeht, probiere verschiedene Aktionen aus und erkunde alle Wege. 
+        Manche Befehle führen zu nichts, andere bringen dich weiter. 
+        Das umsehen ist immer eine gute Idee, um Hinweise zu finden.
+        Am Ende des Abenteuers erhältst du einen vierstelligen Code.</p>
+        <div class="terminal">
         <div id="terminalLog" class="terminal-log"></div>
         <input id="terminalInput" class="terminal-input" placeholder="Befehl eingeben und Enter drücken" onkeydown="if(event.key==='Enter'){handleTerminalCommand();}" autocomplete="off" />
       </div>
-      <p class="note">Befehl <span class="tag">HILFE</span> listet Vorschläge. <span class="tag">RESTART</span> setzt alles zurück.</p>
       <p id="terminalCodeHint" class="digit-pill"></p>
     </div>
   </section>
@@ -76,7 +86,7 @@
   <section id="password" class="page">
     <div class="card password-card">
       <h2>Rätsel 3: Passwort-Spiel</h2>
-      <p class="password-hint">Bitte wähle ein Passwort aus</p>
+      <p class="password-hint">Bitte wähle ein Passwort aus das alle Regeln erfüllt.</p>
       <p id="passwordCode" class="digit-pill"></p>
       <input id="passwordInput" class="password-input" placeholder="Passwort hier eintippen" oninput="checkPassword()" autocomplete="off" />
       <div id="ruleCounter" class="rule-counter"></div>
@@ -105,18 +115,19 @@
         <div class="einstein-clue-col">
           <div class="card subcard">
             <h3>Hinweise</h3>
-            <ul class="clue-list">
-              <li>Kaffee wird im ganz linken Haus getrunken.</li>
-              <li>Das blaue Haus steht ganz links.</li>
-              <li>Der Pinguin wohnt direkt rechts vom Wal im Haus 3.</li>
-              <li>Der Programmierer wohnt im roten Haus.</li>
-              <li>Tee wird neben dem Pinguin getrunken.</li>
-              <li>Ganz rechts sitzt der Fuchs.</li>
-              <li>Im roten Haus schwimmt der Wal.</li>
-              <li>Die Taucherin wohnt im grünen Haus.</li>
-              <li>Im gelben Haus wohnt der Bäcker.</li>
-              <li>Das Haus mit Kakao steht direkt neben dem mit Limo.</li>
-            </ul>
+              <ul class="clue-list">
+                <li>Die Pilotin wohnt in Haus 1, aber weder im grünen noch im gelben Haus.</li>
+                <li>Das Haus, in dem Kaffee getrunken wird, steht ganz links.</li>
+                <li>Es gibt genau ein Haus rechts von der Eule und links von dem Pinguins.</li>
+                <li>Der Wal lebt im roten Haus, welches ein direkter Nachbar des blauen Hauses ist.</li>
+                <li>Die Person, die Limo trinkt, wohnt genau zwischen der Kaffeetrinkerin und der Person, die Kakao genießt.</li>
+                <li>Die Taucherin wohnt im grünen Haus.</li>
+                <li>Der Bäcker wohnt so weit wie möglich von der Pilotin entfernt.</li>
+                <li>Die Person mit dem Fuchs ist dieselbe, die auch Tee trinkt.</li>
+                <li>Das gelbe Haus ist das Zuhause des Bäckers.</li>
+                <li>Der Programmierer ist der unmittelbare linke Nachbar der Taucherin.</li>
+                <li>Das blaue Haus ist nicht das Haus, in dem Kakao getrunken wird.</li>
+              </ul>
           </div>
         </div>
       </div>

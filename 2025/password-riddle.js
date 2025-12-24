@@ -36,7 +36,25 @@ const ruleDefs = [
     return digits.length === uniqueDigits.size;
   } },
   { id: 'hasHash', text: 'Enthaelt mindestens zwei # Zeichen.', test: pwd => ((pwd.match(/#/g) || []).length) >= 2 },
-  { id: 'question', text: 'Endet mit einem Fragezeichen ?', test: pwd => /\?$/.test(pwd) }
+  { id: 'question', text: 'Endet mit einem Fragezeichen ?', test: pwd => /\?$/.test(pwd) },
+  { id: 'leapYear', text: 'Enthaelt eine vierstellige Zahl, die ein Schaltjahr ist (z.B. 1996, 2024).', test: pwd => {
+    const years = pwd.match(/\d{4}/g) || [];
+    return years.some(y => {
+      const year = parseInt(y, 10);
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    });
+  } },
+  { id: 'kbRows', text: 'Enthaelt mindestens einen Buchstaben aus jeder der drei Tastatur-Buchstabenzeilen (QWERTZ..., ASDFGH..., YXCVBN...).', test: pwd => {
+    const r1 = /[qwertzuiopü]/i.test(pwd);
+    const r2 = /[asdfghjklöä]/i.test(pwd);
+    const r3 = /[yxcvbnm]/i.test(pwd);
+    return r1 && r2 && r3;
+  } },
+  { id: 'vowelRatio', text: 'Die Anzahl der Konsonanten muss genau doppelt so hoch sein wie die Anzahl der Vokale (A, E, I, O, U zählen als Vokale).', test: pwd => {
+    const vowels = (pwd.match(/[aeiou]/gi) || []).length;
+    const consonants = (pwd.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+    return vowels > 0 && consonants === vowels * 2;
+  } }
 ];
 
 let passwordRules = [];

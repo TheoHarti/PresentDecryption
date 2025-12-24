@@ -3,9 +3,12 @@ const terminalState = {
   location: 'lichtung',
   hasLamp: false,
   lampOn: false,
+  hasMatches: false,
   hasKey: false,
   chestOpen: false,
   codeFound: false,
+  hasStick: false,
+  matchesReachable: false,
   visited: new Set()
 };
 
@@ -45,7 +48,6 @@ function handleTerminalCommand() {
   const raw = (terminalInput.value || '').trim();
   if (!raw) return;
   
-  // Echo command in terminal
   writeLog(raw, true);
   
   const normalized = normalizeText(raw);
@@ -55,9 +57,12 @@ function handleTerminalCommand() {
     terminalState.location = 'lichtung';
     terminalState.hasLamp = false;
     terminalState.lampOn = false;
+    terminalState.hasMatches = false;
     terminalState.hasKey = false;
     terminalState.chestOpen = false;
     terminalState.codeFound = false;
+    terminalState.hasStick = false;
+    terminalState.matchesReachable = false;
     terminalState.visited.clear();
     terminalCodeHint.textContent = '';
     startTerminal();
@@ -65,7 +70,7 @@ function handleTerminalCommand() {
   }
   
   if (normalized === 'HILFE' || normalized === 'HELP' || normalized === '?') {
-    writeLog('Befehle: UMSEHEN, GEHE [RICHTUNG], NIMM [GEGENSTAND], OEFFNE [GEGENSTAND], BENUTZE [GEGENSTAND], INVENTAR, BETRETE [ORT].\nRichtungen: VORWAERTS/VOR, ZURUECK, LINKS, RECHTS, NORDEN/N, SUEDEN/S, OSTEN/O, WESTEN/W.\nTipp: Du kannst auch ganze Saetze schreiben, z.B. "gehe nach vorne" oder "nimm die Lampe".');
+    writeLog('Befehle: UMSEHEN, GEHE [RICHTUNG], NIMM [GEGENSTAND], OEFFNE [GEGENSTAND], BENUTZE [GEGENSTAND], INVENTAR, BETRETE [ORT].\nRichtungen: VORWAERTS, ZURUECK, LINKS, RECHTS.\nTipp: Du kannst auch "zünde Laterne an" schreiben.');
     return;
   }
   
@@ -75,22 +80,27 @@ function handleTerminalCommand() {
 function processCommand(cmd) {
   const loc = terminalState.location;
   
-  // UMSEHEN
   if (cmd.includes('UMSEHEN') || cmd.includes('UMSCHAUEN') || cmd.includes('SCHAU') || cmd === 'U' || cmd === 'L' || cmd === 'LOOK') {
     describeLocation();
     return;
   }
   
-  // INVENTAR
   if (cmd.includes('INVENTAR') || cmd === 'I' || cmd === 'INV') {
     let items = [];
     if (terminalState.hasLamp) items.push('alte Laterne' + (terminalState.lampOn ? ' (brennt)' : ' (aus)'));
+    if (terminalState.hasMatches) items.push('Streichhoelzer');
     if (terminalState.hasKey) items.push('rostiger Schluessel');
+    if (terminalState.hasStick) items.push('langer Stock');
     writeLog(items.length > 0 ? 'Inventar: ' + items.join(', ') : 'Inventar: leer');
     return;
   }
   
-  // NIMM
+  // BENUTZE muss VOR NIMM kommen, da manche Befehle "HOL" enthalten
+  if (cmd.includes('BENUTZE') || cmd.includes('BENUTZ') || cmd.includes('USE') || cmd.includes('VERWEND')) {
+    handleUse(cmd, loc);
+    return;
+  }
+  
   if (cmd.includes('NIMM') || cmd.includes('NEHM') || cmd.includes('HOL') || cmd.includes('PACK')) {
     handleTake(cmd, loc);
     return;
@@ -100,11 +110,13 @@ function processCommand(cmd) {
   if ((cmd.includes('ZUEND') || cmd.includes('ANZUEND') || cmd.includes('LAMPE AN') || cmd.includes('LICHT AN'))) {
     if (!terminalState.hasLamp) {
       writeLog('Du hast keine Lampe.');
+    } else if (!terminalState.hasMatches) {
+      writeLog('Du hast die Laterne, aber nichts, womit du sie anzuenden koenntest. Du brauchst Streichhoelzer.');
     } else if (terminalState.lampOn) {
       writeLog('Die Laterne brennt bereits.');
     } else {
       terminalState.lampOn = true;
-      writeLog('Du zuendest die Laterne an. Ein warmes, goldenes Licht vertreibt die Dunkelheit um dich herum.');
+      writeLog('Du nimmst ein Streichholz aus der Dose, entzündest es und haeltst es an den Docht. Ein warmes, goldenes Licht vertreibt die Dunkelheit.');
       if (loc === 'huette-innen') {
         describeLocation();
       }
@@ -112,45 +124,67 @@ function processCommand(cmd) {
     return;
   }
   
-  // BEWEGEN
   if (cmd.includes('GEH') || cmd.includes('LAUF') || cmd.includes('WALK') || cmd.includes('MOVE') || 
       cmd === 'N' || cmd === 'S' || cmd === 'O' || cmd === 'W' ||
-      cmd.includes('VOR') || cmd.includes('ZURUECK') || cmd.includes('LINKS') || cmd.includes('RECHTS') ||
-      cmd.includes('NORD') || cmd.includes('SUED') || cmd.includes('OST') || cmd.includes('WEST')) {
+      cmd.includes('VOR') || cmd.includes('ZURUECK') || cmd.includes('RAUS') || cmd.includes('LINKS') || cmd.includes('RECHTS')) {
     move(cmd);
     return;
   }
   
-  // BETRETE
   if (cmd.includes('BETRET') || cmd.includes('GEHE IN') || cmd.includes('REIN') || cmd.includes('ENTER')) {
     handleEnter(cmd, loc);
     return;
   }
   
-  // OEFFNE
   if (cmd.includes('OEFFNE') || cmd.includes('OEFFN') || cmd.includes('AUFMACH') || cmd.includes('OPEN')) {
     handleOpen(cmd, loc);
     return;
   }
   
-  // UNTERSUCHE
   if (cmd.includes('UNTERSUCH') || cmd.includes('BETRACHT') || cmd.includes('INSPECT') || cmd.includes('EXAMINE') || cmd === 'X') {
     handleExamine(cmd, loc);
     return;
   }
   
-  writeLog('Das verstehst du nicht. (Versuche HILFE fuer eine Liste der Befehle)');
+  writeLog('Das kannst du nicht machen. (Versuche HILFE)');
 }
 
 function handleTake(cmd, loc) {
+  // Logik für Lampe
   if (cmd.includes('LAMP') || cmd.includes('LATERN')) {
     if (loc === 'lichtung' && !terminalState.hasLamp) {
       terminalState.hasLamp = true;
-      writeLog('Du hebst die alte Laterne auf. Sie ist schwer und riecht nach Kerosin.');
-    } else if (terminalState.hasLamp) {
-      writeLog('Die Laterne hast du bereits.');
+      writeLog('Du hebst die alte Laterne auf.');
     } else {
-      writeLog('Hier gibt es keine Lampe.');
+      writeLog('Hier ist keine Lampe.');
+    }
+    return;
+  }
+  
+  // Logik für Stock
+  if (cmd.includes('STOCK') || cmd.includes('STAB') || cmd.includes('STICK')) {
+    if (loc === 'scheune' && !terminalState.hasStick) {
+      terminalState.hasStick = true;
+      writeLog('Du nimmst den langen Stock. Damit koenntest du vielleicht hoch gelegene Dinge erreichen.');
+    } else if (terminalState.hasStick) {
+      writeLog('Du hast den Stock schon.');
+    } else {
+      writeLog('Hier gibt es keinen Stock.');
+    }
+    return;
+  }
+  
+  // Logik für Streichhölzer
+  if (cmd.includes('STREICH') || cmd.includes('MATCH') || cmd.includes('DOSE') || cmd.includes('SCHACHTEL')) {
+    if (loc === 'scheune' && !terminalState.matchesReachable && !terminalState.hasMatches) {
+      writeLog('Die Streichhoelzer sind zu hoch oben im Regal. Du kannst sie nicht erreichen.');
+    } else if (loc === 'scheune' && terminalState.matchesReachable && !terminalState.hasMatches) {
+      terminalState.hasMatches = true;
+      writeLog('Du nimmst die kleine Metalldose. Darin klappern ein paar Streichhoelzer.');
+    } else if (terminalState.hasMatches) {
+      writeLog('Du hast die Streichhoelzer schon.');
+    } else {
+      writeLog('Hier gibt es keine Streichhoelzer.');
     }
     return;
   }
@@ -158,11 +192,9 @@ function handleTake(cmd, loc) {
   if (cmd.includes('SCHLUESSEL') || cmd.includes('KEY')) {
     if (loc === 'brunnen' && !terminalState.hasKey) {
       terminalState.hasKey = true;
-      writeLog('Du greifst vorsichtig in den Brunnen und ziehst einen rostigen, aber stabilen Schluessel heraus. Er tropft noch.');
-    } else if (terminalState.hasKey) {
-      writeLog('Den Schluessel hast du bereits.');
+      writeLog('Du nimmst den rostigen Schluessel aus dem Brunnen.');
     } else {
-      writeLog('Hier gibt es keinen Schluessel.');
+      writeLog('Hier ist kein Schluessel.');
     }
     return;
   }
@@ -171,15 +203,13 @@ function handleTake(cmd, loc) {
 }
 
 function handleEnter(cmd, loc) {
-  if (cmd.includes('HUETTE') || cmd.includes('HAUS') || cmd.includes('GEBAEUDE')) {
+  if (cmd.includes('HUETTE') || cmd.includes('HAUS')) {
     if (loc === 'huette-aussen') {
       terminalState.location = 'huette-innen';
-      writeLog('Du drueckst die knarrende Holztuer auf und trittst ein.');
+      writeLog('Du betrittst die dunkle Huette.');
       describeLocation();
-    } else if (loc === 'huette-innen') {
-      writeLog('Du bist bereits in der Huette.');
     } else {
-      writeLog('Hier gibt es keine Huette.');
+      writeLog('Hier ist keine Huette.');
     }
     return;
   }
@@ -189,88 +219,87 @@ function handleEnter(cmd, loc) {
 function handleOpen(cmd, loc) {
   if (cmd.includes('KISTE') || cmd.includes('TRUHE') || cmd.includes('BOX')) {
     if (loc !== 'huette-innen') {
-      writeLog('Hier gibt es keine Kiste.');
-      return;
+      writeLog('Hier ist keine Kiste.');
+    } else if (!terminalState.lampOn) {
+      writeLog('Es ist zu dunkel, um etwas zu oeffnen.');
+    } else if (!terminalState.hasKey) {
+      writeLog('Die Kiste ist verschlossen.');
+    } else {
+      terminalState.chestOpen = true;
+      terminalState.codeFound = true;
+      terminalCodeHint.textContent = 'Code: ' + terminalCode;
+      writeLog('Du oeffnest die Kiste. Der Code lautet: ' + terminalCode);
     }
-    if (!terminalState.lampOn) {
-      writeLog('Es ist zu dunkel. Du kannst nichts sehen.');
-      return;
-    }
-    if (!terminalState.hasKey) {
-      writeLog('Die Kiste ist verschlossen. Sie hat ein altes Schloss, das einen Schluessel braucht.');
-      return;
-    }
-    if (terminalState.chestOpen) {
-      writeLog('Die Kiste ist bereits geoeffnet. Der Code liegt darin: ' + terminalCode);
-      return;
-    }
-    terminalState.chestOpen = true;
-    terminalState.codeFound = true;
-    terminalCodeHint.textContent = 'Code (Text-Abenteuer): ' + terminalCode;
-    writeLog('Du steckst den rostigen Schluessel ins Schloss. Mit einem lauten KLACK springt es auf! Du hebst den schweren Holzdeckel. Zwischen altem Stroh liegt eine Metallplakette mit eingravierter Schrift: CODE ' + terminalCode + '.');
     return;
   }
   writeLog('Das kannst du nicht oeffnen.');
 }
 
 function handleExamine(cmd, loc) {
-  if (cmd.includes('LAMP') || cmd.includes('LATERN')) {
-    if (terminalState.hasLamp) {
-      writeLog('Eine alte Laterne aus Metall und Glas. ' + (terminalState.lampOn ? 'Sie brennt hell.' : 'Sie ist ausgeschaltet, aber du koenntesst sie anzuenden.'));
+  if (cmd.includes('LAMP')) {
+    writeLog(terminalState.hasLamp ? 'Eine alte Kerosinlampe.' : 'Du hast keine Lampe.');
+  } else if (cmd.includes('DOSE') || cmd.includes('STREICH')) {
+    writeLog(terminalState.hasMatches ? 'Eine kleine Dose mit ein paar Streichhoelzern.' : 'Du siehst keine Dose.');
+  } else if (cmd.includes('STOCK')) {
+    writeLog(terminalState.hasStick ? 'Ein langer, stabiler Stock.' : 'Du hast keinen Stock.');
+  } else if (cmd.includes('REGAL')) {
+    if (loc === 'scheune') {
+      writeLog('Ein hohes Holzregal. Ganz oben siehst du eine Metalldose mit Streichhoelzern.');
     } else {
-      writeLog('Du hast keine Laterne.');
+      writeLog('Hier ist kein Regal.');
     }
-    return;
+  } else {
+    writeLog('Nichts Besonderes.');
   }
-  if (cmd.includes('SCHLUESSEL')) {
-    if (terminalState.hasKey) {
-      writeLog('Ein alter, rostiger Eisenschluessel. Er sieht aus, als waere er schon lange nicht mehr benutzt worden.');
+}
+
+function handleUse(cmd, loc) {
+  if (cmd.includes('STOCK') || cmd.includes('STAB')) {
+    if (!terminalState.hasStick) {
+      writeLog('Du hast keinen Stock.');
+    } else if (loc === 'scheune' && !terminalState.matchesReachable) {
+      terminalState.matchesReachable = true;
+      writeLog('Du streckst den Stock nach oben und stoeberst damit im Regal herum. Die Metalldose rutscht nach vorne und faellt auf den Boden.');
+    } else if (loc === 'scheune' && terminalState.matchesReachable) {
+      writeLog('Du hast die Streichhoelzer bereits heruntergeholt.');
     } else {
-      writeLog('Du hast keinen Schluessel.');
+      writeLog('Hier kannst du den Stock nicht benutzen.');
     }
-    return;
+  } else {
+    writeLog('Das kannst du nicht benutzen.');
   }
-  writeLog('Du siehst nichts Besonderes.');
 }
 
 function describeLocation() {
   const loc = terminalState.location;
-  const firstVisit = !terminalState.visited.has(loc);
   terminalState.visited.add(loc);
   
   if (loc === 'lichtung') {
-    if (firstVisit || !terminalState.hasLamp) {
-      writeLog('Du stehst auf einer Lichtung. Das Lagerfeuer flackert schwach. Am Boden, halb im Laub vergraben, liegt etwas Metallisches - eine alte Laterne. Ein Pfad fuehrt nach vorne (Norden) tiefer in den Wald.');
-    } else {
-      writeLog('Die Lichtung mit dem Lagerfeuer. Der Pfad fuehrt nach Norden.');
-    }
+    let desc = 'Du stehst auf der Lichtung beim Lagerfeuer.';
+    if (!terminalState.hasLamp) desc += ' Am Boden liegt eine LATERNE.';
+    desc += ' Ein Pfad fuehrt nach NORDEN. Im OSTEN siehst du eine alte Scheune.';
+    writeLog(desc);
   } else if (loc === 'pfad') {
-    if (firstVisit) {
-      writeLog('Du folgst dem Pfad zwischen hohen Tannen. Links hoerst du das Plaetschern von Wasser. Nach vorne (Norden) wird der Wald dichter, du kannst den Umriss einer alten Huette erahnen. Der Weg zurueck fuehrt nach Sueden.');
-    } else {
-      writeLog('Der Waldpfad. Links (Westen) hoerst du Wasser. Norden zur Huette, Sueden zur Lichtung.');
-    }
+    writeLog('Ein Waldpfad. Im NORDEN siehst du eine Huette, im WESTEN ist ein Brunnen, im SUEDEN geht es zurück zur Lichtung.');
   } else if (loc === 'brunnen') {
-    if (firstVisit || !terminalState.hasKey) {
-      writeLog('Du stehst vor einem alten Steinbrunnen, ueberwuchert von Moos und Efeu. Das Wasser ist tief und dunkel. Etwas glaenzt am Grund - es sieht aus wie ein Schluessel! Du koenntest versuchen, ihn zu nehmen. Der Pfad liegt im Osten.');
-    } else {
-      writeLog('Der alte Brunnen. Der Pfad ist im Osten.');
+    writeLog(terminalState.hasKey ? 'Ein alter Brunnen. Der Pfad ist im Osten.' : 'Ein alter Brunnen. Im Wasser schimmert ein SCHLUESSEL. Der Pfad ist im Osten.');
+  } else if (loc === 'scheune') {
+    let desc = 'Eine alte, verfallene Scheune.';
+    if (!terminalState.hasStick) desc += ' In der Ecke lehnt ein langer STOCK.';
+    if (!terminalState.hasMatches && !terminalState.matchesReachable) {
+      desc += ' An der Wand haengt ein hohes REGAL. Ganz oben auf dem Regal siehst du eine Metalldose - vermutlich STREICHHOELZER.';
+    } else if (!terminalState.hasMatches && terminalState.matchesReachable) {
+      desc += ' Die Metalldose mit den STREICHHOELZERN liegt jetzt am Boden.';
     }
+    desc += ' Die Lichtung ist im WESTEN.';
+    writeLog(desc);
   } else if (loc === 'huette-aussen') {
-    if (firstVisit) {
-      writeLog('Vor dir steht eine verfallene Holzhuette. Das Dach ist schief, Fenster sind mit Brettern vernagelt. Ueber der angelehnte Tuer haengt ein verwittertes Rentiergeweih. Du koenntest die Huette betreten. Der Pfad zurueck liegt im Sueden.');
-    } else {
-      writeLog('Die alte Huette. Du kannst sie betreten oder nach Sueden zurueck zum Pfad.');
-    }
+    writeLog('Du stehst vor der HUETTE. Der Pfad ist im Sueden.');
   } else if (loc === 'huette-innen') {
     if (!terminalState.lampOn) {
-      writeLog('Pechschwarz. Ohne Licht siehst du rein gar nichts. Du koenntest die Laterne anzuenden, falls du eine hast.');
+      writeLog('Es ist stockfinster. Du siehst absolut nichts.');
     } else {
-      if (firstVisit) {
-        writeLog('Das Licht der Laterne erhellt den staubigen Raum. Spinnweben haengen von der Decke. Auf einem wackeligen Holztisch steht eine schwere, eisenbeschlagene Kiste. Sie hat ein altes Schloss.');
-      } else {
-        writeLog('Die staubige Huette. Auf dem Tisch steht die ' + (terminalState.chestOpen ? 'geoeffnete' : 'verschlossene') + ' Kiste.');
-      }
+      writeLog('Das Lampenlicht zeigt eine staubige Huette mit einer KISTE auf dem Tisch.');
     }
   }
 }
@@ -279,63 +308,28 @@ function move(cmd) {
   const loc = terminalState.location;
   let moved = false;
   
-  // VON LICHTUNG
   if (loc === 'lichtung') {
-    if (cmd.includes('VOR') || cmd.includes('NORD') || cmd === 'N') {
-      terminalState.location = 'pfad';
-      writeLog('Du folgst dem schmalen Pfad nach Norden in den Wald hinein. Die Baeume werden dichter.');
-      moved = true;
-    }
+    if (cmd.includes('VOR') || cmd.includes('NORD') || cmd === 'N') { terminalState.location = 'pfad'; moved = true; }
+    else if (cmd.includes('RECHTS') || cmd.includes('OST') || cmd === 'O') { terminalState.location = 'scheune'; moved = true; }
+  } else if (loc === 'scheune') {
+    if (cmd.includes('LINKS') || cmd.includes('WEST') || cmd === 'W') { terminalState.location = 'lichtung'; moved = true; }
+  } else if (loc === 'pfad') {
+    if (cmd.includes('ZURUECK') || cmd.includes('SUED') || cmd === 'S') { terminalState.location = 'lichtung'; moved = true; }
+    else if (cmd.includes('VOR') || cmd.includes('NORD') || cmd === 'N') { terminalState.location = 'huette-aussen'; moved = true; }
+    else if (cmd.includes('LINKS') || cmd.includes('WEST') || cmd === 'W') { terminalState.location = 'brunnen'; moved = true; }
+  } else if (loc === 'brunnen' && (cmd.includes('RECHTS') || cmd.includes('OST') || cmd === 'O')) {
+    terminalState.location = 'pfad'; moved = true;
+  } else if (loc === 'huette-aussen') {
+    if (cmd.includes('ZURUECK') || cmd.includes('SUED') || cmd === 'S') { terminalState.location = 'pfad'; moved = true; }
+  } else if (loc === 'huette-innen' && (cmd.includes('RAUS') || cmd.includes('AUSSEN') || cmd.includes('HINAUS') || cmd === 'S')) {
+    terminalState.location = 'huette-aussen'; moved = true;
   }
   
-  // VON PFAD
-  else if (loc === 'pfad') {
-    if (cmd.includes('ZURUECK') || cmd.includes('SUED') || cmd === 'S') {
-      terminalState.location = 'lichtung';
-      writeLog('Du gehst den Pfad zurueck zur Lichtung.');
-      moved = true;
-    } else if (cmd.includes('VOR') || cmd.includes('NORD') || cmd === 'N') {
-      terminalState.location = 'huette-aussen';
-      writeLog('Du gehst weiter nach Norden. Zwischen den Baeumen taucht eine alte Huette auf.');
-      moved = true;
-    } else if (cmd.includes('LINKS') || cmd.includes('WEST') || cmd === 'W') {
-      terminalState.location = 'brunnen';
-      writeLog('Du folgst dem Geraeusch des Wassers nach Westen und findest einen alten Brunnen.');
-      moved = true;
-    }
-  }
-  
-  // VON BRUNNEN
-  else if (loc === 'brunnen') {
-    if (cmd.includes('RECHTS') || cmd.includes('OST') || cmd === 'O' || cmd.includes('ZURUECK')) {
-      terminalState.location = 'pfad';
-      writeLog('Du gehst zurueck zum Pfad.');
-      moved = true;
-    }
-  }
-  
-  // VON HUETTE AUSSEN
-  else if (loc === 'huette-aussen') {
-    if (cmd.includes('ZURUECK') || cmd.includes('SUED') || cmd === 'S') {
-      terminalState.location = 'pfad';
-      writeLog('Du gehst den Pfad ein Stueck nach Sueden zurueck.');
-      moved = true;
-    }
-  }
-  
-  // VON HUETTE INNEN
-  else if (loc === 'huette-innen') {
-    if (cmd.includes('RAUS') || cmd.includes('ZURUECK') || cmd.includes('HINAUS')) {
-      terminalState.location = 'huette-aussen';
-      writeLog('Du verlaesst die Huette und stehst wieder draussen.');
-      moved = true;
-    }
-  }
-  
-  if (!moved) {
+  if (moved) {
+    describeLocation();
+  } else {
     writeLog('In diese Richtung kannst du nicht gehen.');
   }
 }
 
-// Initialize terminal when script loads
 startTerminal();
